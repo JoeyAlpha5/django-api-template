@@ -1,5 +1,3 @@
-Django Docker Template
-
 # **DJANGO API TEMPLATE**
 
 This documentation provides an overview of the DJANGO api and highlights the steps required to get the application up and running on your machine. 
@@ -25,4 +23,3 @@ The app can be improved further by adding the following:
 - Deployment pipeline
 - App monitoring (i.e Cloudwatch logs and setting up alarms)
 
-# django-api-template
