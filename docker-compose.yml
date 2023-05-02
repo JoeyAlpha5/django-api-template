@@ -1,0 +1,56 @@
+version: '3.1'
+
+services:
+  database:
+    image: postgres:13
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: password
+      POSTGRES_USER: user
+      POSTGRES_DB: database
+    ports:
+      - 5432:5432
+    volumes:
+      - pg-postgres-data:/var/lib/postgresql/data
+
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@pgadmin.com
+      PGADMIN_DEFAULT_PASSWORD: password
+      PGADMIN_LISTEN_PORT: 8001
+    ports:
+      - 8001:8001
+    depends_on:
+      - database
+
+  mailhog:
+    image: mailhog/mailhog
+    logging:
+      driver: 'none'  # disable saving logs
+    ports:
+      - 1025:1025 # smtp server
+      - 8025:8025 # web ui
+
+  backend:
+    image: 'django-backend'
+    build:
+      context: .
+    environment:
+      - ENVIRONMENT=local
+      - DB_HOST=database
+      - DB_NAME=database
+      - DB_USER=user
+      - DB_PASSWORD=password
+    command: bash -c "python -u ./manage.py migrate && python ./manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - database
+      - mailhog
+
+volumes:
+  pg-postgres-data:
